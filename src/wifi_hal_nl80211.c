@@ -11620,8 +11620,8 @@ int wifi_drv_send_action(void *priv, unsigned int freq, unsigned int wait_time, 
         // *csa_offs = <csa offset data>
     }
 
-    ret = nl80211_send_frame_cmd(interface, freq, wait_time, buf, 24 + data_len, use_cookie, no_ack,
-        offchanok, csa_offs, csa_offs_len, link_id);
+    ret = nl80211_send_frame_cmd(interface, freq, wait_time, buf, 24 + data_len, use_cookie, offchanok,
+                                 no_ack, csa_offs, csa_offs_len, link_id);
 
     free(csa_offs);
     free(buf);
@@ -12496,7 +12496,15 @@ int wifi_drv_set_wds_sta(void *priv, const u8 *addr, int aid, int val, const cha
 
 #ifdef CONFIG_GENERIC_MLO
     link_id = wifi_hal_get_mld_link_id(interface);
+    if (link_id == -1) {
+        wifi_hal_error_print("%s:%d: Failed to get mld link id\n", __func__, __LINE__);
+        return RETURN_ERR;
+    }
     mld_name = wifi_hal_get_mld_name_by_interface_name(interface->name);
+    if (mld_name == NULL) {
+        wifi_hal_error_print("%s:%d: Failed to get mld name by interface name\n", __func__, __LINE__);
+        return RETURN_ERR;
+    }
 #endif // CONFIG_GENERIC_MLO
 
     if (mld_name != NULL) {

@@ -3310,7 +3310,7 @@ INT wifi_hal_startNeighborScan(INT apIndex, wifi_neighborScanMode_t scan_mode, I
 
     case WIFI_RADIO_SCAN_MODE_SELECT_CHANNELS: {
 
-        if (chan_num != 0 || chan_list != NULL) {
+        if (chan_num == 0 || chan_list == NULL) {
             wifi_hal_error_print("%s:%d: [SCAN] Needs chan_num and chan_list param\n", __func__,
                 __LINE__);
             return WIFI_HAL_INVALID_ARGUMENTS;
