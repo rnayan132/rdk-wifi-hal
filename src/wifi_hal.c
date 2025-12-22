@@ -472,8 +472,18 @@ INT wifi_hal_init()
 #endif
     if (pthread_create(&g_wifi_hal.nl_tid, attrp, nl_recv_func, &g_wifi_hal) != 0) {
         wifi_hal_error_print("%s:%d:ssp_main create failed\n", __func__, __LINE__);
+#if defined(_PLATFORM_BANANAPI_R4_)
+        if (attrp != NULL) {
+            pthread_attr_destroy(attrp);
+        }
+#endif
         return RETURN_ERR;
     }
+#if defined(_PLATFORM_BANANAPI_R4_)
+    if (attrp != NULL) {
+        pthread_attr_destroy(attrp);
+    }
+#endif
 #ifndef CONFIG_WIFI_EMULATOR
     if (eap_server_register_methods() != 0) {
         wifi_hal_error_print("%s:%d: failing to register eap server default methods\n", __func__, __LINE__);

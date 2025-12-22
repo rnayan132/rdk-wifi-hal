@@ -1135,7 +1135,7 @@ int update_hostap_bss(wifi_interface_info_t *interface)
     memcpy(conf->bssid, interface->mac, sizeof(interface->mac));
 
     memset(conf->ssid.ssid, 0, sizeof(conf->ssid.ssid));
-    memcpy(conf->ssid.ssid, vap->u.bss_info.ssid, strlen(vap->u.bss_info.ssid));
+    memcpy(conf->ssid.ssid, vap->u.bss_info.ssid, sizeof(conf->ssid.ssid));
     conf->ssid.ssid_len = strlen(vap->u.bss_info.ssid);
     if (!conf->ssid.ssid_len)
         conf->ssid.ssid_set = 0;

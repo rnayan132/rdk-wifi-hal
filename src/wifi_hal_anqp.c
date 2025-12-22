@@ -475,7 +475,6 @@ INT wifi_anqpSendResponse(UINT apIndex, mac_address_t sta, unsigned char token, 
                 {
                     wifi_anqp_dbg_print(1, "%s:%d: freeing anqp_info:    \n", __func__, __LINE__);
                     free(anqp_info);
-                    anqp_info = NULL;
                 }
             }
         }
@@ -537,7 +536,6 @@ INT wifi_anqpSendResponse(UINT apIndex, mac_address_t sta, unsigned char token, 
                 {
                     wifi_anqp_dbg_print(1, "%s:%d: freeing anqp_hs_2_info elem-data:    \n", __func__, __LINE__);
                     free(anqp_hs_2_info);
-                    anqp_hs_2_info = NULL;
                 }
             }
         }
@@ -569,7 +567,6 @@ INT wifi_anqpSendResponse(UINT apIndex, mac_address_t sta, unsigned char token, 
                 elem->data = NULL;
             }
             free(elem);
-            elem = NULL;
         }
         tmp = head;
         head = head->next;
