@@ -452,6 +452,8 @@ siv_encrypt (siv_ctx *ctx, const unsigned char *p, unsigned char *c,
      * everything else.
      */
     siv_restart(ctx);
+
+    va_end(ap);
     return 1;
 }
 
@@ -494,8 +496,10 @@ siv_decrypt (siv_ctx *ctx, const unsigned char *c, unsigned char *p,
     siv_restart(ctx);
     if (memcmp(ctr, counter, AES_BLOCK_SIZE)) {
         memset(p, 0, len);
+        va_end(ap);
         return -1;      /* FAIL */
     } else {
+        va_end(ap);
         return 1;
     }
 }
