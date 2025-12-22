@@ -546,7 +546,6 @@ INT wifi_anqpSendResponse(UINT apIndex, mac_address_t sta, unsigned char token, 
             elem->data = NULL;
         }
         free(elem);
-        elem = NULL;
         tmp = head;
         head = head->next;
         free(tmp);
