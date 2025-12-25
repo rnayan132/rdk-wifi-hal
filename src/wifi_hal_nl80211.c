@@ -12505,19 +12505,17 @@ int wifi_drv_set_wds_sta(void *priv, const u8 *addr, int aid, int val, const cha
         wifi_hal_error_print("%s:%d: Failed to get mld name by interface name\n", __func__, __LINE__);
         return RETURN_ERR;
     }
-#endif // CONFIG_GENERIC_MLO
 
-    if (mld_name != NULL) {
-        ret = os_snprintf(name, sizeof(name), "%s.sta%d", mld_name, aid);
-        if (wifi_hal_get_mac_address(mld_name, intf_mac) < 0) {
-            wifi_hal_error_print("%s:%d: Failed to get MAC address for interface %s\n", __func__,
-                __LINE__, mld_name);
-            return RETURN_ERR;
-        }
-    } else {
-        ret = os_snprintf(name, sizeof(name), "%s.sta%d", interface->name, aid);
-        memcpy(intf_mac, vap->u.bss_info.bssid, sizeof(mac_address_t));
+    ret = os_snprintf(name, sizeof(name), "%s.sta%d", mld_name, aid);
+    if (wifi_hal_get_mac_address(mld_name, intf_mac) < 0) {
+        wifi_hal_error_print("%s:%d: Failed to get MAC address for interface %s\n", __func__,
+        __LINE__, mld_name);
+        return RETURN_ERR;
     }
+#else
+    ret = os_snprintf(name, sizeof(name), "%s.sta%d", interface->name, aid);
+    memcpy(intf_mac, vap->u.bss_info.bssid, sizeof(mac_address_t));
+#endif // CONFIG_GENERIC_MLO
 
     if (ret >= (int) sizeof(name)) {
         wifi_hal_info_print("%s:%d nl80211: WDS interface name:%s was truncated\r\n",
@@ -12581,11 +12579,11 @@ int wifi_drv_set_wds_sta(void *priv, const u8 *addr, int aid, int val, const cha
             return RETURN_ERR;
         }
 
-        if (mld_name != NULL) {
-            nl80211_set_sta_vlan(radio, interface, addr, mld_name, 0, link_id);
-        } else {
-            nl80211_set_sta_vlan(radio, interface, addr, interface->name, 0, link_id);
-        }
+#ifdef CONFIG_GENERIC_MLO
+        nl80211_set_sta_vlan(radio, interface, addr, mld_name, 0, link_id);
+#else
+        nl80211_set_sta_vlan(radio, interface, addr, interface->name, 0, link_id);
+#endif // CONFIG_GENERIC_MLO
 
         nl80211_delete_interface(radio->index, name, if_nametoindex(name));
         memset(&event, 0, sizeof(event));
