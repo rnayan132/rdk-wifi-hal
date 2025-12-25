@@ -434,6 +434,7 @@ siv_encrypt (siv_ctx *ctx, const unsigned char *p, unsigned char *c,
     int adlen, numad = nad;
     unsigned char ctr[AES_BLOCK_SIZE];
 
+    printf("%s:%d: Rtesting: Enter\n", __func__, __LINE__);
     if (numad) {
         va_start(ap, nad);
         while (numad) {
@@ -453,6 +454,7 @@ siv_encrypt (siv_ctx *ctx, const unsigned char *p, unsigned char *c,
      * everything else.
      */
     siv_restart(ctx);
+    printf("%s:%d: Rtesting: Exit\n", __func__, __LINE__);
 
     return 1;
 }
@@ -475,6 +477,8 @@ siv_decrypt (siv_ctx *ctx, const unsigned char *c, unsigned char *p,
     int adlen, numad = nad;
     unsigned char ctr[AES_BLOCK_SIZE];
 
+    printf("%s:%d: Rtesting: Enter\n", __func__, __LINE__);
+
     memcpy(ctr, counter, AES_BLOCK_SIZE);
     siv_aes_ctr(ctx, c, len, p, ctr);
     if (numad) {
@@ -495,6 +499,7 @@ siv_decrypt (siv_ctx *ctx, const unsigned char *c, unsigned char *p,
      * everything else.
      */
     siv_restart(ctx);
+    printf("%s:%d: Rtesting: Exit\n", __func__, __LINE__);
     if (memcmp(ctr, counter, AES_BLOCK_SIZE)) {
         memset(p, 0, len);
         return -1;      /* FAIL */

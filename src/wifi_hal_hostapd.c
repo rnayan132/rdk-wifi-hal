@@ -1119,6 +1119,7 @@ int update_hostap_bss(wifi_interface_info_t *interface)
     op_param = &radio->oper_param;
 
     conf = &interface->u.ap.conf;
+    wifi_hal_info_print("%s:%d: RTesting Enter\n", __func__, __LINE__);
 
 #ifdef CONFIG_IEEE80211BE
     conf->disable_11be = !radio->iconf.ieee80211be;
@@ -1128,6 +1129,7 @@ int update_hostap_bss(wifi_interface_info_t *interface)
     snprintf(conf->bridge, sizeof(conf->bridge), "%s", interface->bridge);
     sprintf(conf->vlan_bridge, "vlan%d", vap->vap_index);
 
+    wifi_hal_info_print("%s:%d: RTesting iface %s, bridge %s\n", __func__, __LINE__, conf->iface, conf->bridge);
     conf->ctrl_interface = interface->ctrl_interface;
     strcpy(conf->ctrl_interface, "/var/run/hostapd");
     conf->ctrl_interface_gid_set = 1;
@@ -1136,6 +1138,7 @@ int update_hostap_bss(wifi_interface_info_t *interface)
 
     memset(conf->ssid.ssid, 0, sizeof(conf->ssid.ssid));
     memcpy(conf->ssid.ssid, vap->u.bss_info.ssid, sizeof(conf->ssid.ssid));
+    wifi_hal_info_print("%s:%d: RTesting ssid: %s\n", __func__, __LINE__, conf->ssid.ssid);
     conf->ssid.ssid_len = strlen(vap->u.bss_info.ssid);
     if (!conf->ssid.ssid_len)
         conf->ssid.ssid_set = 0;
@@ -1313,6 +1316,7 @@ int update_hostap_bss(wifi_interface_info_t *interface)
     }
 #endif /* defined(CONFIG_MBO) */
 
+    wifi_hal_info_print("%s:%d: RTesting Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 

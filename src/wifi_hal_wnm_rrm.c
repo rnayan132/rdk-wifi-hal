@@ -1056,6 +1056,8 @@ int wifi_rrm_send_beacon_resp(unsigned int ap_index, wifi_neighbor_ap2_t *bss,
     wifi_radio_info_t *radio = NULL;
     wifi_interface_info_t *interface = get_interface_by_vap_index(ap_index);
 
+    wifi_hal_info_print("%s:%d: RTesting Enter\n", __func__, __LINE__);
+
     radio = get_radio_by_rdk_index(interface->vap_info.radio_index);
     wifi_radio_operationParam_t *radio_param = NULL;
     radio_param = &radio->oper_param;
@@ -1143,6 +1145,8 @@ int wifi_rrm_send_beacon_resp(unsigned int ap_index, wifi_neighbor_ap2_t *bss,
     wifi_hal_send_mgmt_frame(ap_index, backhaul->bssid, wpabuf_head(report), wpabuf_len(report), 0, 0);
     os_free(wpa_buf);
     wpabuf_free(report);
+
+    wifi_hal_info_print("%s:%d: RTesting Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 

@@ -410,6 +410,7 @@ INT wifi_anqpSendResponse(UINT apIndex, mac_address_t sta, unsigned char token, 
              wifi_anqp_dbg_print(1, "%s:%d: converted mac: %s ap_index=%d\n", __func__, __LINE__,macStr,apIndex);
     }
 
+    wifi_hal_info_print("%s:%d: RTesting Enter\n", __func__, __LINE__);
     wifi_anqp_dbg_print(1, "%s:%d: wifi_anqpSendResponse start on AP: %d \n", __func__,__LINE__,apIndex+1);
     wifi_anqp_dbg_print(1, "STA: %s\n",macStr);
     if (head == NULL)
@@ -659,6 +660,7 @@ INT wifi_anqpSendResponse(UINT apIndex, mac_address_t sta, unsigned char token, 
     wifi_hal_send_mgmt_frame(apIndex,  sta,(unsigned char *)anqp_gas_initial_response_frame,(sizeof(wifi_anqpResponseFrame_t) + total_length),0, 0);
 #endif
     wifi_anqp_dbg_print(1, "%s:%d: wifi_anqpSendResponse exit\n", __func__, __LINE__);
+    wifi_hal_info_print("%s:%d: RTesting Exit\n", __func__, __LINE__);
     return RETURN_OK;
 }
 

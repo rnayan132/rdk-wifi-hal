@@ -11568,6 +11568,7 @@ int wifi_drv_send_action(void *priv, unsigned int freq, unsigned int wait_time, 
 #endif // BANANA_PI_PORT
 {
     wifi_hal_dbg_print("%s:%d: Enter\n", __func__, __LINE__);
+    wifi_hal_info_print("%s:%d: RTesting Enter\n", __func__, __LINE__);
 
     wifi_interface_info_t *interface;
 
@@ -11626,6 +11627,7 @@ int wifi_drv_send_action(void *priv, unsigned int freq, unsigned int wait_time, 
     free(csa_offs);
     free(buf);
 
+    wifi_hal_info_print("%s:%d: RTesting Exit\n", __func__, __LINE__);
     return ret;
 }
 
@@ -12472,6 +12474,7 @@ int wifi_drv_set_wds_sta(void *priv, const u8 *addr, int aid, int val, const cha
 #endif // BANANA_PI_PORT
 {
     wifi_hal_dbg_print("%s:%d: Enter\n", __func__, __LINE__);
+    wifi_hal_info_print("%s:%d: Rtesting: Enter\n", __func__, __LINE__);
 
     if (priv == NULL || addr == NULL) {
         wifi_hal_error_print("%s:%d wrong input param\r\n", __func__, __LINE__);
@@ -12494,6 +12497,7 @@ int wifi_drv_set_wds_sta(void *priv, const u8 *addr, int aid, int val, const cha
     radio = get_radio_by_rdk_index(vap->radio_index);
 
 #ifdef CONFIG_GENERIC_MLO
+    wifi_hal_info_print("%s:%d: Rtesting: Enter 1\n", __func__, __LINE__);
     link_id = wifi_hal_get_mld_link_id(interface);
     if (link_id == -1) {
         wifi_hal_error_print("%s:%d: Failed to get mld link id\n", __func__, __LINE__);
@@ -12514,6 +12518,7 @@ int wifi_drv_set_wds_sta(void *priv, const u8 *addr, int aid, int val, const cha
         return RETURN_ERR;
     }
 #else
+    wifi_hal_info_print("%s:%d: Rtesting: Enter 2\n", __func__, __LINE__);
     ret = os_snprintf(name, sizeof(name), "%s.sta%d", interface->name, aid);
     memcpy(intf_mac, vap->u.bss_info.bssid, sizeof(mac_address_t));
 #endif // CONFIG_GENERIC_MLO
@@ -12601,6 +12606,7 @@ int wifi_drv_set_wds_sta(void *priv, const u8 *addr, int aid, int val, const cha
             }
     }
 
+    wifi_hal_info_print("%s:%d: Rtesting: Exit\n", __func__, __LINE__);
     return 0;
 }
 

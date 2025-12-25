@@ -414,6 +414,7 @@ INT wifi_hal_init()
     char *drv_name;
 
     wifi_hal_info_print("%s:%d: start\n", __func__, __LINE__);
+    wifi_hal_info_print("%s:%d: RTesting Enter\n", __func__, __LINE__);
     if ((drv_name = get_wifi_drv_name()) == NULL) {
         wifi_hal_error_print("%s:%d: driver not found, get drv name failed\n", __func__, __LINE__);
         return RETURN_ERR;
@@ -470,6 +471,7 @@ INT wifi_hal_init()
     }
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 #endif
+    wifi_hal_info_print("%s:%d: RTesting Enter 1\n", __func__, __LINE__);
     if (pthread_create(&g_wifi_hal.nl_tid, attrp, nl_recv_func, &g_wifi_hal) != 0) {
         wifi_hal_error_print("%s:%d:ssp_main create failed\n", __func__, __LINE__);
 #if defined(_PLATFORM_BANANAPI_R4_)
@@ -543,6 +545,7 @@ INT wifi_hal_init()
     rearrange_interfaces_map();
 #endif
     wifi_hal_info_print("%s:%d: done\n", __func__, __LINE__);
+    wifi_hal_info_print("%s:%d: RTesting Exit\n", __func__, __LINE__);
 
     return RETURN_OK;
 }
@@ -2979,6 +2982,8 @@ INT wifi_hal_startNeighborScan(INT apIndex, wifi_neighborScanMode_t scan_mode, I
     wifi_hal_stats_dbg_print("%s:%d: [SCAN] == ENTER (mode:%u, dwell_time:%d) ==\n", __func__,
         __LINE__, scan_mode, dwell_time);
 
+    wifi_hal_info_print("%s:%d: RTesting Enter\n", __func__, __LINE__);
+
     if (dwell_time < 0) {
         wifi_hal_stats_error_print("%s:%d: invalid dwell time: %d\n", __func__, __LINE__,
             dwell_time);
@@ -3320,6 +3325,7 @@ INT wifi_hal_startNeighborScan(INT apIndex, wifi_neighborScanMode_t scan_mode, I
 
     case WIFI_RADIO_SCAN_MODE_SELECT_CHANNELS: {
 
+    wifi_hal_info_print("%s:%d: RTesting Enter 1\n", __func__, __LINE__);
         if (chan_num == 0 || chan_list == NULL) {
             wifi_hal_error_print("%s:%d: [SCAN] Needs chan_num and chan_list param\n", __func__,
                 __LINE__);
@@ -3399,6 +3405,7 @@ INT wifi_hal_startNeighborScan(INT apIndex, wifi_neighborScanMode_t scan_mode, I
 
     wifi_hal_stats_dbg_print("%s:%d: [SCAN] scan triggered (%s, %s)\n", __func__, __LINE__,
         (is_ap_mode ? "AP" : "STA"), (is_active_scan ? "ACTIVE" : "PASSIVE"));
+    wifi_hal_info_print("%s:%d: RTesting Exit\n", __func__, __LINE__);
     return WIFI_HAL_SUCCESS;
 }
 
