@@ -12487,7 +12487,6 @@ int wifi_drv_set_wds_sta(void *priv, const u8 *addr, int aid, int val, const cha
     int ret;
     wifi_vap_info_t *vap;
     wifi_radio_info_t *radio;
-    char *mld_name = NULL;
     int link_id = -1;
     mac_address_t intf_mac = {};
 
@@ -12500,6 +12499,8 @@ int wifi_drv_set_wds_sta(void *priv, const u8 *addr, int aid, int val, const cha
         wifi_hal_error_print("%s:%d: Failed to get mld link id\n", __func__, __LINE__);
         return RETURN_ERR;
     }
+
+    char *mld_name = NULL;
     mld_name = wifi_hal_get_mld_name_by_interface_name(interface->name);
     if (mld_name == NULL) {
         wifi_hal_error_print("%s:%d: Failed to get mld name by interface name\n", __func__, __LINE__);
