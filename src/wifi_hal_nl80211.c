@@ -4200,12 +4200,14 @@ int nl80211_interface_enable(const char *ifname, bool enable)
     int fd, res;
     short flags;
 
+    wifi_hal_info_print("%s:%d RTesting Entry\n", __func__, __LINE__);
     if (get_vap_state(ifname, &flags) < 0) {
         wifi_hal_error_print("%s:%d could not get state of interface %s\n", __func__, __LINE__, ifname);
         return -1;
     }
 
     if (enable == true) {
+    wifi_hal_info_print("%s:%d RTesting Entry 1\n", __func__, __LINE__);
         if (flags & IFF_UP) {
             // already up
             wifi_hal_dbg_print("%s:%d interface %s already up\n", __func__, __LINE__, ifname);
@@ -4214,7 +4216,8 @@ int nl80211_interface_enable(const char *ifname, bool enable)
             flags |= IFF_UP;
         }
     } else {
-        if ((flags | ~IFF_UP) == 0) {
+    wifi_hal_info_print("%s:%d RTesting Entry 2\n", __func__, __LINE__);
+        if ((flags & IFF_UP) == 0) {
             // already down
             wifi_hal_dbg_print("%s:%d interface %s already down\n", __func__, __LINE__, ifname);
             return 0;
@@ -4236,6 +4239,7 @@ int nl80211_interface_enable(const char *ifname, bool enable)
     close(fd);
 
     wifi_hal_dbg_print("Interface %s %s\n", ifname, enable ? "enabled" : "disabled");
+    wifi_hal_info_print("%s:%d RTesting Exit\n", __func__, __LINE__);
 
     return res;
 }
