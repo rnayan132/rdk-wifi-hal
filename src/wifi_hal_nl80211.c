@@ -2726,7 +2726,7 @@ void recv_data_frame(wifi_interface_info_t *interface)
                 int ret;
                 struct nl_msg *msg;
                 unsigned char *data;
-                size_t shift, len;
+                int shift, len;
                 u16 rtap_len;
                 struct ieee80211_mgmt *mgmt = NULL;
                 mac_address_t bmac = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -2737,6 +2737,7 @@ void recv_data_frame(wifi_interface_info_t *interface)
                     wifi_hal_info_print("%s:%d Invalid packet buflen < shift (%d < %zu)\n", __func__, __LINE__, buflen, shift);
                     return;
                 }
+
                 len  = buflen - shift;
 
                 char rssi = *(buff + sizeof(struct ethhdr) + 15);
@@ -2791,7 +2792,7 @@ void recv_data_frame(wifi_interface_info_t *interface)
             unsigned char *data;
             struct nl_msg *msg;
             struct sta_info *station;
-            size_t shift, len;
+            int shift, len;
             u16 rtap_len;
             mac_addr_str_t mac_str;
             int proto;
@@ -2799,6 +2800,10 @@ void recv_data_frame(wifi_interface_info_t *interface)
 
             rtap_len = WPA_GET_BE16(buff + sizeof(struct ethhdr) + 2);
             shift = sizeof(struct ethhdr) + ntohs(rtap_len);
+            if (buflen < shift) {
+                wifi_hal_info_print("%s:%d Invalid packet buflen < shift (%d < %zu)\n", __func__, __LINE__, buflen, shift);
+                return;
+            }
             len  = buflen - shift;
 
             memcpy(sta, buff + shift + 10, sizeof(mac_address_t));
