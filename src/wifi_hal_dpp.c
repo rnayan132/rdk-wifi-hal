@@ -1,3 +1,4 @@
+#ifdef ENABLE_WIFI_HAL_DPP_FEATURE
 /*
  * If not stated otherwise in this file or this component's LICENSE file the
  * following copyright and licenses apply:
@@ -3630,3 +3631,4 @@ typedef struct __attribute__((packed)){
     unsigned char ia_action;
 } _ieee80211_action;
 //end
+#endif // ENABLE_WIFI_HAL_DPP_FEATURE
