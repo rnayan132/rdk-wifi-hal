@@ -2740,6 +2740,11 @@ void recv_data_frame(wifi_interface_info_t *interface)
 
                 len  = buflen - shift;
 
+                if (len < 0) {
+                    wifi_hal_info_print("%s:%d Invalid packet len %d\n", __func__, __LINE__, len);
+                    return;
+                }
+
                 char rssi = *(buff + sizeof(struct ethhdr) + 15);
                 char bitrate = *(buff + sizeof(struct ethhdr) + 10);
                 char noise = *(buff + sizeof(struct ethhdr) + 16);
@@ -2806,6 +2811,10 @@ void recv_data_frame(wifi_interface_info_t *interface)
             }
             len  = buflen - shift;
 
+            if (len < 0) {
+                wifi_hal_info_print("%s:%d Invalid packet len %d\n", __func__, __LINE__, len);
+                return;
+            }
             memcpy(sta, buff + shift + 10, sizeof(mac_address_t));
             //Check if not from us and to us
             if ((memcmp(sta, interface->mac, sizeof(mac_address_t)) == 0) ||
