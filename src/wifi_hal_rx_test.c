@@ -38,7 +38,6 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
-#include <unistd.h>
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #include <linux/netlink.h>
@@ -205,42 +204,4 @@ INT start_receiving_test_frames()
 
 
        return RETURN_OK;
-}
-
-void wifi_rdk_hal_dbg_print(char *format, ...)
-{
-    char buff[4096] = {0};
-    va_list list;
-    static FILE *fpg = NULL;
-    
-    //get_formatted_time(buff);
-    if ((access("/nvram/wifiRdkHal", R_OK)) != 0)
-    {
-        return;
-    }
-    get_formatted_time(buff);
-    strcat(buff, " ");
-
-    va_start(list, format);
-    vsprintf(&buff[strlen(buff)], format, list);
-    va_end(list);
-
-    if (fpg == NULL)
-    {
-        fpg = fopen("/tmp/wifiRdkHal", "a+");
-        if (fpg == NULL)
-        {
-            return;
-        }
-        else
-        {
-            fputs(buff, fpg);
-        }
-    }
-    else
-    {
-        fputs(buff, fpg);
-    }
-
-    fflush(fpg);
 }

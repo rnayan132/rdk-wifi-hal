@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+#include <unistd.h>
 #include "wifi_hal_rdk_framework.h"
 #include "wifi_hal.h"
 #include "wifi_hal_rdk.h"
@@ -52,6 +53,44 @@ static void DumpHex(const void* data, size_t size)
        }
 }
 #endif
+
+void wifi_rdk_hal_dbg_print(char *format, ...)
+{
+    char buff[4096] = {0};
+    va_list list;
+    static FILE *fpg = NULL;
+
+    //get_formatted_time(buff);
+    if ((access("/nvram/wifiRdkHal", R_OK)) != 0)
+    {
+        return;
+    }
+    get_formatted_time(buff);
+    strcat(buff, " ");
+
+    va_start(list, format);
+    vsprintf(&buff[strlen(buff)], format, list);
+    va_end(list);
+
+    if (fpg == NULL)
+    {
+        fpg = fopen("/tmp/wifiRdkHal", "a+");
+        if (fpg == NULL)
+        {
+            return;
+        }
+        else
+        {
+            fputs(buff, fpg);
+        }
+    }
+    else
+    {
+        fputs(buff, fpg);
+    }
+
+    fflush(fpg);
+}
 
 static inline unsigned short be_to_host16(unsigned short v)
 {
