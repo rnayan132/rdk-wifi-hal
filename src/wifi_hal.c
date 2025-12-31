@@ -472,14 +472,18 @@ INT wifi_hal_init()
 #endif
     if (pthread_create(&g_wifi_hal.nl_tid, attrp, nl_recv_func, &g_wifi_hal) != 0) {
         wifi_hal_error_print("%s:%d:ssp_main create failed\n", __func__, __LINE__);
-        if(attrp != NULL) {
+#if defined(_PLATFORM_BANANAPI_R4_)
+        if (attrp != NULL) {
             pthread_attr_destroy(attrp);
         }
+#endif
         return RETURN_ERR;
     }
-    if(attrp != NULL) {
+#if defined(_PLATFORM_BANANAPI_R4_)
+    if (attrp != NULL) {
         pthread_attr_destroy(attrp);
     }
+#endif
 #ifndef CONFIG_WIFI_EMULATOR
     if (eap_server_register_methods() != 0) {
         wifi_hal_error_print("%s:%d: failing to register eap server default methods\n", __func__, __LINE__);
@@ -726,7 +730,7 @@ INT wifi_hal_setRadioOperatingParameters(wifi_radio_index_t index, wifi_radio_op
     platform_set_radio_params_t  set_radio_params_fn;
     wifi_interface_info_t *interface = NULL;
     wifi_interface_info_t *primary_interface = NULL;
-    wifi_radio_operationParam_t old_operationParam;
+    wifi_radio_operationParam_t *old_operationParam = NULL;
     platform_set_radio_pre_init_t set_radio_pre_init_fn;
     bool is_channel_changed;
     int ret;
@@ -794,7 +798,12 @@ INT wifi_hal_setRadioOperatingParameters(wifi_radio_index_t index, wifi_radio_op
         return RETURN_ERR;
     }
 
-    memcpy((unsigned char *)&old_operationParam, (unsigned char *)&radio->oper_param, sizeof(wifi_radio_operationParam_t));
+    old_operationParam = (wifi_radio_operationParam_t *)malloc(sizeof(wifi_radio_operationParam_t));
+    if (old_operationParam == NULL) {
+        wifi_hal_error_print("%s:%d: malloc filed\n", __func__, __LINE__);
+        return RETURN_ERR;
+    }
+    memcpy((unsigned char *)old_operationParam, (unsigned char *)&radio->oper_param, sizeof(wifi_radio_operationParam_t));
 
     nl80211_interface_enable(wifi_hal_get_interface_name(primary_interface),
         operationParam->enable);
@@ -813,6 +822,7 @@ INT wifi_hal_setRadioOperatingParameters(wifi_radio_index_t index, wifi_radio_op
 
         if (update_hostap_config_params(radio) != RETURN_OK ) {
             wifi_hal_error_print("%s:%d:Failed to update hostap config params\n", __func__, __LINE__);
+            free(old_operationParam);
             return RETURN_ERR;
         }
 
@@ -842,6 +852,7 @@ INT wifi_hal_setRadioOperatingParameters(wifi_radio_index_t index, wifi_radio_op
                         }
                     }
                     if (update_hostap_interface_params(interface) != RETURN_OK) {
+                        free(old_operationParam);
                         return RETURN_ERR;
                     }
                     interface->beacon_set = 0;
@@ -870,6 +881,7 @@ INT wifi_hal_setRadioOperatingParameters(wifi_radio_index_t index, wifi_radio_op
                     pthread_mutex_unlock(&g_wifi_hal.hapd_lock);
 
                     if (update_hostap_interface_params(interface) != RETURN_OK) {
+                        free(old_operationParam);
                         return RETURN_ERR;
                     }
                     interface->bss_started = false;
@@ -904,6 +916,7 @@ INT wifi_hal_setRadioOperatingParameters(wifi_radio_index_t index, wifi_radio_op
 
         if (memcmp((unsigned char *)&radio->oper_param, (unsigned char *)operationParam, sizeof(wifi_radio_operationParam_t)) != 0) {
             wifi_hal_error_print("%s:%d: CAC is running for DFS Channel:%u. Wait for CAC to be over \n", __func__, __LINE__, operationParam->channel);
+            free(old_operationParam);
             return RETURN_ERR;
         }
 
@@ -989,6 +1002,7 @@ INT wifi_hal_setRadioOperatingParameters(wifi_radio_index_t index, wifi_radio_op
                             __func__, __LINE__);
                         goto try_hostap_config_update;
                     } else {
+                        free(old_operationParam);
                         return RETURN_ERR;
                     }
                 }
@@ -1035,12 +1049,15 @@ Exit:
     if (!radio->configured) {
         radio->configured = true;
     }
+
+    free(old_operationParam);
     return RETURN_OK;
 
 reload_config:
     if (radio->configured == true) {
-        memcpy((unsigned char *)&radio->oper_param, (unsigned char *)&old_operationParam, sizeof(wifi_radio_operationParam_t));
+        memcpy((unsigned char *)&radio->oper_param, (unsigned char *)old_operationParam, sizeof(wifi_radio_operationParam_t));
     }
+    free(old_operationParam);
     if (update_hostap_config_params(radio) != RETURN_OK ) {
         wifi_hal_error_print("%s:%d:Failed to update hostap config params, Got into a bad state radioindex : %d\n", __func__, __LINE__, index);
         return RETURN_ERR;
@@ -3484,7 +3501,7 @@ INT wifi_hal_startNeighborScan(INT apIndex, wifi_neighborScanMode_t scan_mode, I
 
     case WIFI_RADIO_SCAN_MODE_SELECT_CHANNELS: {
 
-        if (chan_num != 0 || chan_list != NULL) {
+        if (chan_num == 0 || chan_list == NULL) {
             wifi_hal_error_print("%s:%d: [SCAN] Needs chan_num and chan_list param\n", __func__,
                 __LINE__);
             return WIFI_HAL_INVALID_ARGUMENTS;
