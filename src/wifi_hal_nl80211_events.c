@@ -995,7 +995,6 @@ static void nl80211_ch_switch_notify_event(wifi_interface_info_t *interface, str
     }
 
     wifi_radio_operationParam_t *radio_param;
-    wifi_radio_operationParam_t tmp_radio_param;
     radio_param = &radio->oper_param;
 
     if (is_channel_supported_on_radio(radio_param->band, freq) != true) {
@@ -1038,14 +1037,20 @@ static void nl80211_ch_switch_notify_event(wifi_interface_info_t *interface, str
         break;
     }
 
-    memcpy(&tmp_radio_param, radio_param, sizeof(wifi_radio_operationParam_t));
-    tmp_radio_param.channelWidth = l_channel_width;
-    tmp_radio_param.channel = channel;
+    // Storing 'channelWidth' and 'channel' into local variables
+    wifi_channelBandwidth_t prev_channel_width = radio_param->channelWidth;
+    UINT prev_channel = radio_param->channel;
 
-    if ((op_class = get_op_class_from_radio_params(&tmp_radio_param)) == -1) {
+    radio_param->channelWidth = l_channel_width;
+    radio_param->channel = channel;
+
+    if ((op_class = get_op_class_from_radio_params(radio_param)) == -1) {
         wifi_hal_error_print("%s:%d: failed to get op class for channel: %d, width: %d,"
-            "country: %d\n", __func__, __LINE__, tmp_radio_param.channel,
-            tmp_radio_param.channelWidth, tmp_radio_param.countryCode);
+            "country: %d\n", __func__, __LINE__, radio_param->channel,
+            radio_param->channelWidth, radio_param->countryCode);
+        // reverting 'channelWidth' and 'channel' in case of failure
+        radio_param->channelWidth = prev_channel_width;
+        radio_param->channel = prev_channel;
         return;
     }
 
