@@ -15474,8 +15474,7 @@ int nl80211_dfs_radar_detected (wifi_interface_info_t *interface, int freq, int 
     dfs_chan_change_event(interface->vap_info.radio_index, radio->oper_param.channel, radio->oper_param.channelWidth, radio->oper_param.operatingClass);
     free(radio_param);
     radio_param = NULL;
-#endif /* defined(CMXB7_PORT) || defined(FEATURE_HOSTAP_MGMT_FRAME_CTRL) */  
-
+#endif /* defined(CMXB7_PORT) || defined(FEATURE_HOSTAP_MGMT_FRAME_CTRL) */
     return RETURN_OK;
 }
 
