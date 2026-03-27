@@ -1003,7 +1003,7 @@ INT wifi_sendActionFrame(INT apIndex, mac_address_t MacAddr, UINT frequency, UCH
 
 int platform_set_radio_pre_init(wifi_radio_index_t index, wifi_radio_operationParam_t *operationParam)
 {
-    if ((index < 0) || (operationParam == NULL)) {
+    if (operationParam == NULL) {
         wifi_hal_dbg_print("%s:%d Invalid Argument \n", __FUNCTION__, __LINE__);
         return -1;
     }
