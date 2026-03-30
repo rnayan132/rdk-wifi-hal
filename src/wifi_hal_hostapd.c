@@ -777,7 +777,7 @@ int update_security_config(wifi_vap_security_t *sec, struct hostapd_bss_config *
             radius_cfg = &sec->u.radius;
         }
         conf->disable_pmksa_caching = sec->disable_pmksa_caching;
-        if (radius_cfg->ip == 0) {
+        if (radius_cfg->ip[0] == '\0') {
             wifi_hal_error_print("%s:%d:Invalid radius server IP configuration in VAP setting\n", __func__, __LINE__);
             return RETURN_ERR;
         }
@@ -1116,7 +1116,6 @@ int update_hostap_bss(wifi_interface_info_t *interface)
     struct hostapd_bss_config   *conf;
     wifi_vap_info_t *vap;
     wifi_radio_info_t *radio;
-    mac_addr_str_t  mac_str;
     wifi_radio_operationParam_t *op_param;
     int vlan_id = 0;
     // re-initialize the default parameters
@@ -1132,8 +1131,8 @@ int update_hostap_bss(wifi_interface_info_t *interface)
     conf->disable_11be = !radio->iconf.ieee80211be;
 #endif /* CONFIG_IEEE80211BE */
 
-    strcpy(conf->iface, interface->name);
-    strcpy(conf->bridge, interface->bridge);
+    snprintf(conf->iface, sizeof(conf->iface), "%s", interface->name);
+    snprintf(conf->bridge, sizeof(conf->bridge), "%s", interface->bridge);
     sprintf(conf->vlan_bridge, "vlan%d", vap->vap_index);
 
     conf->ctrl_interface = interface->ctrl_interface;
@@ -1143,7 +1142,7 @@ int update_hostap_bss(wifi_interface_info_t *interface)
     memcpy(conf->bssid, interface->mac, sizeof(interface->mac));
 
     memset(conf->ssid.ssid, 0, sizeof(conf->ssid.ssid));
-    strcpy(conf->ssid.ssid, vap->u.bss_info.ssid);
+    memcpy(conf->ssid.ssid, vap->u.bss_info.ssid, sizeof(conf->ssid.ssid));
     conf->ssid.ssid_len = strlen(vap->u.bss_info.ssid);
     if (!conf->ssid.ssid_len)
         conf->ssid.ssid_set = 0;
@@ -1265,7 +1264,6 @@ int update_hostap_bss(wifi_interface_info_t *interface)
     
     //hessid
 
-    strcpy(conf->hessid, to_mac_str(vap->u.bss_info.interworking.interworking.hessid, mac_str));
     to_mac_bytes((vap->u.bss_info.interworking.interworking.hessid), conf->hessid);
     wifi_hal_dbg_print(" %s: %s 802.11u - NEW IW_En=%d access_network_type=%d conf->[venue_info_set=%d venue_group=%d venue_type=%d hessid="MACF"]\n",
                 __func__, interface->name, conf->interworking, conf->access_network_type,
@@ -2534,7 +2532,7 @@ static int wpa_sm_sta_get_beacon_ie(void *ctx)
     pthread_mutex_lock(&interface->scan_info_mutex);
     bss = hash_map_get_first(interface->scan_info_map);
     while (bss != NULL) {
-        if (memcmp(backhaul->bssid, bss->bssid, sizeof(bssid_t)) == 0 && bss->ie != NULL) {
+        if (memcmp(backhaul->bssid, bss->bssid, sizeof(bssid_t)) == 0 && bss->ie_len > 0) {
 
             rsn_ie = (ieee80211_tlv_t *)get_ie((unsigned char *)bss->ie, bss->ie_len, WLAN_EID_RSN);
 #if HOSTAPD_VERSION >= 210
